@@ -1,0 +1,2 @@
+- Authors:
+    - Bertrand Mathieu (bertrand.mathieu_at_ingeniweb.com) [b_mathieu]

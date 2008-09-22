@@ -1,0 +1,74 @@
+
+collective/eggproxy/update_script.py,49
+def isOutDated(28,1079
+def updateCache(37,1351
+
+collective/eggproxy/utils.py,267
+class PackageIndex(28,1108
+    def can_add(32,1305
+class PackageNotFound(40,1423
+class IndexProxy(44,1474
+    def __init__(46,1501
+    def updateBaseIndex(49,1554
+    def _lookupPackage(65,2104
+    def updatePackageIndex(69,2249
+    def updateEggFor(99,3436
+
+collective/eggproxy/apache_handler.py,57
+def fixup_handler(23,895
+def modpython_handler(43,1623
+
+collective/eggproxy/tests/test_eggproxydocstrings.py,46
+def doc_suite(31,994
+def test_suite(62,2025
+
+collective/eggproxy/tests/test_eggproxydocs.py,46
+def doc_suite(31,973
+def test_suite(58,1934
+
+setup.cfg,16
+tag_build 2,11
+
+buildout.cfg,14
+develop 2,11
+
+LICENSE,825
+		       Version 2,33
+ Copyright (C) 1989, 1991 Free Software Foundation,4,64
+                       59 Temple Place,5,121
+                       59 Temple Place, Suite 5,121
+                       59 Temple Place, Suite 330, Boston,5,121
+ of this license document,7,262
+  To protect your rights,28,1319
+running the Program is not restricted,74,3718
+notices that refer to this License and to the absence of any warranty;83,4237
+your rights to work written entirely by you; rather,125,6549
+In addition,129,6723
+with the Program 130,6794
+    1 and 2 above on a medium customarily used for software interchange; or,140,7312
+    b) Accompany it with a written offer,142,7390
+    customarily used for software interchange; or,147,7726
+integrity of the free software distribution system,218,11666
+system;222,11922
+
+bootstrap.py,0
+
+setup.py,0
+
+CHANGES,0
+
+README.txt,0
+
+collective/eggproxy/tests/__init__.py,0
+
+collective/eggproxy/__init__.py,0
+
+collective/eggproxy/docs/README.txt,0
+
+collective/eggproxy/doctests/README.txt,0
+
+collective/eggproxy/README.txt,0
+
+collective/eggproxy/config.py,0
+
+collective/__init__.py,0
