@@ -58,7 +58,7 @@ setup(name='collective.eggproxy',
           # -*- Extra requirements: -*-
       ],
       tests_require=['zope.testing',],
-      extras_require=dict(test=['zope.testing',])
+      extras_require=dict(test=['zope.testing',]),
       entry_points="""
       [console_scripts]
       eggproxy_update = collective.eggproxy.update_script:updateCache
