@@ -33,6 +33,13 @@ long_description = (
     + '\n\n'
     )
 
+console_scripts = [
+    'eggproxy_update = collective.eggproxy.update_script:updateCache',
+    'eggproxy_run = collective.eggproxy.wsgi:standalone'
+    ]
+
+
+
 setup(name='collective.eggproxy',
       version=version,
       description="An egg index proxy",
@@ -55,12 +62,16 @@ setup(name='collective.eggproxy',
       #test_suite = "collective.eggproxy.tests.test_eggproxydocs.test_suite",
       install_requires=[
           'setuptools',
+          'Paste',
+          'PasteDeploy',
           # -*- Extra requirements: -*-
       ],
       tests_require=['zope.testing',],
       extras_require=dict(test=['zope.testing',]),
-      entry_points="""
-      [console_scripts]
-      eggproxy_update = collective.eggproxy.update_script:updateCache
-      """,
+      entry_points={
+          'console_scripts': console_scripts,
+          'paste.app_factory': [
+              'main = collective.eggproxy.wsgi:app_factory',
+              ],
+          },
       )
