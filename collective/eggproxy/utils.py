@@ -88,7 +88,7 @@ class IndexProxy(object):
 
             filename, md5  = egg_info_for_url(dist.location)
             print >> html, (
-                '<a href="%s#%s" rel="download">%s</a></br>'
+                '<a href="%s#%s" rel="download">%s</a><br />'
                 % (filename, md5, filename)
                 )
 
