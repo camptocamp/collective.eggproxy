@@ -1,12 +1,14 @@
-trunk (2008-09-22)
-==================
+History
+=======
 
-  - initial version as collective.eggproxy. This package was formerly known as
-    iw.eggproxy
-    (https://ingeniweb.svn.sourceforge.net/svnroot/ingeniweb/iw.eggproxy)
+0.2.1 (unreleased)
+::::::::::::::::::
 
 0.2.0 (2008-09-22)
-==================
+::::::::::::::::::
+
+- initial version as collective.eggproxy. This package was formerly known as
+  iw.eggproxy (https://ingeniweb.svn.sourceforge.net/svnroot/ingeniweb/iw.eggproxy)
 
 - package index/download files: skip modules installed in local system (resulted
   in copying a directory instead of downloading a file)
@@ -19,6 +21,6 @@ trunk (2008-09-22)
 - fixed malformed tag in generated indexes
 
 0.1.0 (2008-06-06)
-==================
+::::::::::::::::::
 
 - initial version created by IngeniSkel

@@ -90,8 +90,8 @@ Apache must be able to write to "/path/to/pypi"! (usually Apache user is
 `www-data`). For updating proxied egg information you must add the script
 `eggproxy_update` into the crontab of this user.
 
-mod_python update on Debian Etch:
-=================================
+mod_python update on Debian Etch
+::::::::::::::::::::::::::::::::
 
 Quick build instructions from debian "lenny" sources::
 
