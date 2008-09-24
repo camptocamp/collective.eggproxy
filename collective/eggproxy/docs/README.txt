@@ -1,33 +1,42 @@
-===================
+===========================
 collective.eggproxy package
-===================
+===========================
 
 .. contents::
 
 What is collective.eggproxy ?
-=====================
+=============================
 
-collective.eggproxy is a module for apache mod_python. Its purpose is to serve as a pypi
-proxy.
+collective.eggproxy is a smart mirror for PyPI.
 
-The main idea is to mirror locally on demand. At first run it will download pypi
-index and build a page of links. When a software asks for a specific package,
-version, ... it will be downloaded by collective.eggproxy, if needed. All files are
-eventually served by apache, as static content. collective.eggproxy just takes care of
-checking if it must (and can) be downloaded first.
+It will collect packages on PyPI only when a program like easy_install
+or zc.buildout asks for it. In other words, unlike some mirrors
+that act like rsync and get the whole PyPI base (more than 5 gigas)
+collective.eggproxy will only get what you need.
+
+At first run collective.eggproxy downloads pypi index and builds a page of links. 
+When a software asks for a specific package, version, etc. 
+collective.eggproxy downloads it if needed and store it locally.
 
 How to use collective.eggproxy ?
-========================
+================================
 
-You need mod_python 3.3 for apache. It will not work with previous versions.
+After it has been installed, you can just launch it as a standalone server 
+like this::
 
-Debian Etch users: Etch provides 3.2, so users of Etch must get the source
-package from "Lenny" (testing) and rebuild it with dpkg-buildpackage. Please have
-a look at the related section in this document to get some help.
+    $ eggproxy_run 
 
-Configuration file:
+The proxy will then ben available on the localhost on the port 8888.
+All package will be downloaded by default into /var/www. If this directory
+does not exists (or if you are under windows), you will need to configure it,
+as explained in the next section.
 
-Currently its location is fixed to /etc/apache2/eggproxy.conf::
+Advanced configuration
+======================
+
+collective.eggproxy can use a configuration file:
+
+Currently its location is fixed at /etc/eggproxy.conf and looks like this::
 
     [default]
     eggs_directory = /path/to/pypi
@@ -36,7 +45,21 @@ Currently its location is fixed to /etc/apache2/eggproxy.conf::
     # update information for files older than 24h
     update_interval = 24
 
-Apache setup for http://servername/pypi::
+If /etc/eggproxy.conf is not found, it will look into your home folder, so 
+you can alternatively put this configuration file in your home directory,
+which can be convenient under Windows.
+
+Using the proxy behind Apache
+=============================
+
+You can also use collective.eggproxy with Apache. You will need for that 
+mod_python 3.3 for apache. It will not work with previous versions.
+
+Debian Etch users: Etch provides 3.2, so users of Etch must get the source
+package from "Lenny" (testing) and rebuild it with dpkg-buildpackage. Please have
+a look at the related section in this document to get some help.
+
+An Apache setup for http://servername/pypi can be::
 
     Alias /pypi "/path/to/pypi"
     <Directory "/path/to/pypi">
