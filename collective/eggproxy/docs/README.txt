@@ -31,6 +31,20 @@ All package will be downloaded by default into /var/www. If this directory
 does not exists (or if you are under windows), you will need to configure it,
 as explained in the next section.
 
+From there you can use it in easy_install like this::
+
+    easy_install -i http://localhost:8888/ iw.fss
+
+The iw.fss package will be downloaded, stored locally and provided to easy_insall.
+
+In zc.buildout, just define the index value in the buildout section::
+
+    [buildout]
+
+    index = http://localhost:8888/
+
+That's it !
+ 
 Advanced configuration
 ======================
 
