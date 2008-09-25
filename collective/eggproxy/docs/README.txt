@@ -14,18 +14,18 @@ or zc.buildout asks for it. In other words, unlike some mirrors
 that act like rsync and get the whole PyPI base (more than 5 gigas)
 collective.eggproxy will only get what you need.
 
-At first run collective.eggproxy downloads pypi index and builds a page of links. 
-When a software asks for a specific package, version, etc. 
+At first run collective.eggproxy downloads pypi index and builds a page of links.
+When a software asks for a specific package, version, etc.
 collective.eggproxy downloads it if needed and store it locally.
 
 How to use collective.eggproxy ?
 ================================
 
-After it has been installed, you can just launch it as a standalone server 
+After it has been installed, you can just launch it as a standalone server
 like this::
 
     $ mkdir /tmp/eggs
-    $ eggproxy_run 
+    $ eggproxy_run
 
 The proxy will then ben available on the localhost on the port 8888.
 All package will be downloaded by default into /var/www. If this directory
@@ -46,7 +46,7 @@ In zc.buildout, just define the index value in the buildout section::
     allow-hosts = *localhost*
 
 That's it !
- 
+
 Advanced configuration
 ======================
 
@@ -61,38 +61,32 @@ Currently its location is fixed at /etc/eggproxy.conf and looks like this::
     # update information for files older than 24h
     update_interval = 24
 
-If `/etc/eggproxy.conf` is not found, it will look into your home folder, so 
+If `/etc/eggproxy.conf` is not found, it will look into your home folder, so
 you can alternatively put this configuration file in your home directory,
 which can be convenient under Windows.
 
 Running the proxy using Paste
 =============================
 
-You need a paste configuration file like this::
+You need a paste configuration file::
 
-  [server:main]
-  use = egg:Paste#http
-  port = 8888
+  $ paster make-config collective.eggproxy myconfig.ini
 
-  [app:main]
-  use = egg:collective.eggproxy
-  eggs_directory = /usr/share/eggs_directory
-  index = http://pypi.python.org/simple
-
+Feel free to edit the default configuration.
 This configuration will override the `eggproxy.conf` file.
 
-Then use `paster` as usual::  
+Then use `paster` to serve the application::
 
   $ paster serve configfile.ini
 
-And test it::  
+And test it::
 
   $ easy_install -i http://localhost:8888/ -H "*localhost*" iw.fss
 
 Using the proxy behind Apache
 =============================
 
-You can also use collective.eggproxy with Apache. You will need for that 
+You can also use collective.eggproxy with Apache. You will need for that
 mod_python 3.3 for apache. It will not work with previous versions.
 
 Debian Etch users: Etch provides 3.2, so users of Etch must get the source
@@ -124,7 +118,7 @@ Quick build instructions from debian "lenny" sources::
     $ sudo apt-get build-dep libapache2-mod-python
     $ sudo apt-get install fakeroot
 
-Visit http://packages.debian.org/sources/lenny/libapache2-mod-python and grab 
+Visit http://packages.debian.org/sources/lenny/libapache2-mod-python and grab
 the files with these extensions:
 
 - .dsc
@@ -143,9 +137,9 @@ the files with these extensions:
     $ dpkg-buildpackage -rfakeroot -b
     $ cd ..
 
-you should have the following files: 
+you should have the following files:
 
-- libapache2-mod-python_3.3.1-3_i386.deb 
+- libapache2-mod-python_3.3.1-3_i386.deb
 - libapache2-mod-python-doc_3.3.1-3_all.deb
 
 The last step is calling `dpkg`::

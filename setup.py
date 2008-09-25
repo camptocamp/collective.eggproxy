@@ -69,6 +69,9 @@ setup(name='collective.eggproxy',
       extras_require=dict(test=['zope.testing',]),
       entry_points={
           'console_scripts': console_scripts,
+          'paste.app_install': [
+              'main = collective.eggproxy.wsgi:Installer',
+              ],
           'paste.app_factory': [
               'main = collective.eggproxy.wsgi:app_factory',
               ],

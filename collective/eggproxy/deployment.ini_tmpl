@@ -1,0 +1,8 @@
+[server:main]
+use = egg:Paste#http
+port = 8888
+
+[app:main]
+use = egg:collective.eggproxy
+eggs_directory = %(here)s/eggs_directory
+index = http://pypi.python.org/simple

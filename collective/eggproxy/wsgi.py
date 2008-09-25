@@ -19,6 +19,7 @@
 import os
 import sys
 import tempfile
+from paste.script.appinstall import Installer as BaseInstaller
 from paste.config import ConfigMiddleware
 from paste.config import CONFIG
 from paste.fileapp import FileApp
@@ -94,6 +95,19 @@ def app_factory(global_config, **local_conf):
         sys.exit()
     index_url = local_conf.get('index', 'http://pypi.python.org/simple')
     return EggProxyApp(index_url, eggs_dir)
+
+
+class Installer(BaseInstaller):
+    use_cheetah = False
+    config_file = 'deployment.ini_tmpl'
+    def config_content(self, command, vars):
+        import pkg_resources
+        module = 'collective.eggproxy'
+        if pkg_resources.resource_exists(module, self.config_file):
+            return self.template_renderer(
+                  pkg_resources.resource_string(module, self.config_file),
+                                                vars, filename=self.config_file)
+
 
 def standalone():
     import paste.script.command
