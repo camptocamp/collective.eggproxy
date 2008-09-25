@@ -65,8 +65,7 @@ setup(name='collective.eggproxy',
           'PasteScript',
           # -*- Extra requirements: -*-
       ],
-      tests_require=['zope.testing',],
-      extras_require=dict(test=['zope.testing',]),
+      tests_require=[],
       entry_points={
           'console_scripts': console_scripts,
           'paste.app_install': [
