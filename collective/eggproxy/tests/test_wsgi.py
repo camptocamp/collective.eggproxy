@@ -18,6 +18,6 @@ def test_package_index():
 @with_setup(setup_func, teardown_func)
 def test_package():
     response = app.get('/collective.eggproxy')
-    response = app.get('/collective.eggproxy/collective.eggproxy-0.2.0.tar.gz')
+    response = response.click(index=0)
     assert ('Content-Encoding', 'gzip') in response.headers, response.headers
 

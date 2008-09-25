@@ -17,7 +17,7 @@ def test_index():
     page = open(os.path.join(tempdir, 'index.html')).read()
 
     # check case
-    assert 'ZODB3' in page
+    assert 'PasteDeploy' in page
 
 @with_setup(setup_func, teardown_func)
 def test_package():
@@ -31,3 +31,16 @@ def test_package():
 
     page = open(os.path.join(dirname, 'index.html')).read()
     assert '<html><head><title>collective.eggproxy</title></head>' in page
+
+@with_setup(setup_func, teardown_func)
+def test_package_case_sensitive():
+    index.updatePackageIndex('Paste', tempdir)
+    dirname = os.path.join(tempdir, 'Paste')
+
+    assert os.path.isdir(dirname) == True
+
+    assert os.listdir(dirname) == ['index.html']
+    ['index.html']
+
+    page = open(os.path.join(dirname, 'index.html')).read()
+    assert '<html><head><title>Paste</title></head>' in page

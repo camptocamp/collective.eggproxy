@@ -65,7 +65,7 @@ class IndexProxy(object):
        #print >> html, '</body></html>'
 
        # so for now i add a quick fix to get real package names
-       page = urllib.urlopen('http://pypi.python.org/simple')
+       page = urllib.urlopen(self.index.index_url)
        html.write(page.read())
 
        html.close()
@@ -97,8 +97,8 @@ class IndexProxy(object):
 
             filename, md5  = egg_info_for_url(dist.location)
             print >> html, (
-                '<a href="%s#%s" rel="download">%s</a><br />'
-                % (filename, md5, filename)
+                '<a href="/%s/%s#%s" rel="download">%s</a><br />'
+                % (package_name, filename, md5, filename)
                 )
 
         print >> html, "</body></html>"
