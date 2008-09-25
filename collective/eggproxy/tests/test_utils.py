@@ -1,21 +1,8 @@
 # -*- coding: utf-8 -*-
 from collective.eggproxy.utils import IndexProxy
-from nose import with_setup
-import tempfile
-import shutil
-import os
+from collective.eggproxy.tests import *
 
 index = IndexProxy()
-tempdir = os.path.join(tempfile.gettempdir(), 'eggs')
-
-def setup_func():
-    if os.path.isdir(tempdir):
-        shutil.rmtree(tempdir)
-    os.mkdir(tempdir)
-
-def teardown_func():
-    if os.path.isdir(tempdir):
-        shutil.rmtree(tempdir)
 
 @with_setup(setup_func, teardown_func)
 def test_index():
