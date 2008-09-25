@@ -16,6 +16,7 @@
 ## Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 import os
 import tempfile
+import urllib
 import shutil
 from setuptools.package_index import PackageIndex as BasePackageIndex
 from setuptools.package_index import egg_info_for_url
@@ -43,22 +44,30 @@ class PackageNotFound(Exception):
 
 class IndexProxy(object):
 
-    def __init__(self,):
-        self.index = INDEX
+    def __init__(self, index=None):
+        self.index = index or INDEX
 
-    def updateBaseIndex(self):
+    def updateBaseIndex(self, eggs_dir=EGGS_DIR):
        """Update base index.html
        """
-       file_path = os.path.join(EGGS_DIR, 'index.html')
-       self.index.scan_all()
-       package_names = self.index.package_pages.keys()
-       package_names.sort()
-
+       file_path = os.path.join(eggs_dir, 'index.html')
        html = open(file_path, 'w')
-       print >> html, "<html><head><title>Simple Index</title></head><body>"
-       for pack_name in package_names:
-           print >> html, '<a href="%s/">%s</a><br/>' % (pack_name, pack_name)
-       print >> html, '</body></html>'
+
+       # FIXME: BEBIERE, this code sucks. You get all package names in lower
+       # case
+       #self.index.scan_all()
+       #package_names = self.index.package_pages.keys()
+       #package_names.sort()
+
+       #print >> html, "<html><head><title>Simple Index</title></head><body>"
+       #for pack_name in package_names:
+       #    print >> html, '<a href="%s/">%s</a><br/>' % (pack_name, pack_name)
+       #print >> html, '</body></html>'
+
+       # so for now i add a quick fix to get real package names
+       page = urllib.urlopen('http://pypi.python.org/simple')
+       html.write(page.read())
+
        html.close()
        del html
 
@@ -66,13 +75,13 @@ class IndexProxy(object):
         requirement = Requirement.parse(package_name)
         self.index.find_packages(requirement)
 
-    def updatePackageIndex(self, package_name):
+    def updatePackageIndex(self, package_name, eggs_dir=EGGS_DIR):
         """Update info for a specific package
         """
         self._lookupPackage(package_name)
         if not self.index[package_name]:
             raise PackageNotFound, "Package '%s' does not exists or has no eggs" % package_name
-        package_path = os.path.join(EGGS_DIR, package_name)
+        package_path = os.path.join(eggs_dir, package_name)
         if not os.path.exists(package_path):
             os.mkdir(package_path)
 
@@ -96,11 +105,11 @@ class IndexProxy(object):
         html.close()
         del html
 
-    def updateEggFor(self, package_name, eggname):
+    def updateEggFor(self, package_name, eggname, eggs_dir=EGGS_DIR):
         """Download an egg for package_name
         """
         self._lookupPackage(package_name)
-        file_path = os.path.join(EGGS_DIR, package_name, eggname)
+        file_path = os.path.join(eggs_dir, package_name, eggname)
         for dist in self.index[package_name]:
             if getattr(dist, "module_path", None) is not None:
                 # this is a module installed in system (directory), we want

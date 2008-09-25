@@ -24,6 +24,7 @@ How to use collective.eggproxy ?
 After it has been installed, you can just launch it as a standalone server 
 like this::
 
+    $ mkdir /tmp/eggs
     $ eggproxy_run 
 
 The proxy will then ben available on the localhost on the port 8888.
@@ -33,7 +34,7 @@ as explained in the next section.
 
 From there you can use it in easy_install like this::
 
-    easy_install -i http://localhost:8888/ iw.fss
+    easy_install -i http://localhost:8888/ -H "*localhost*" iw.fss
 
 The iw.fss package will be downloaded, stored locally and provided to easy_insall.
 
@@ -42,6 +43,7 @@ In zc.buildout, just define the index value in the buildout section::
     [buildout]
 
     index = http://localhost:8888/
+    allow-hosts = *localhost*
 
 That's it !
  
@@ -59,9 +61,33 @@ Currently its location is fixed at /etc/eggproxy.conf and looks like this::
     # update information for files older than 24h
     update_interval = 24
 
-If /etc/eggproxy.conf is not found, it will look into your home folder, so 
+If `/etc/eggproxy.conf` is not found, it will look into your home folder, so 
 you can alternatively put this configuration file in your home directory,
 which can be convenient under Windows.
+
+Running the proxy using Paste
+=============================
+
+You need a paste configuration file like this::
+
+  [server:main]
+  use = egg:Paste#http
+  port = 8888
+
+  [app:main]
+  use = egg:collective.eggproxy
+  eggs_directory = /usr/share/eggs_directory
+  index = http://pypi.python.org/simple
+
+This configuration will override the `eggproxy.conf` file.
+
+Then use `paster` as usual::  
+
+  $ paster serve configfile.ini
+
+And test it::  
+
+  $ easy_install -i http://localhost:8888/ -H "*localhost*" iw.fss
 
 Using the proxy behind Apache
 =============================

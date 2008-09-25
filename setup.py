@@ -62,8 +62,7 @@ setup(name='collective.eggproxy',
       #test_suite = "collective.eggproxy.tests.test_eggproxydocs.test_suite",
       install_requires=[
           'setuptools',
-          'Paste',
-          'PasteDeploy',
+          'PasteScript',
           # -*- Extra requirements: -*-
       ],
       tests_require=['zope.testing',],

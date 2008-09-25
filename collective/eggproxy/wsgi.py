@@ -17,18 +17,24 @@
 ## along with this program; see the file COPYING. If not, write to the
 ## Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 import os
-from paste import httpserver
+import sys
+import tempfile
+from paste.config import ConfigMiddleware
+from paste.config import CONFIG
 from paste.fileapp import FileApp
 from paste.httpexceptions import HTTPNotFound
-from collective.eggproxy import eggs_index_proxy
+from collective.eggproxy.utils import PackageIndex
+from collective.eggproxy import IndexProxy
 from collective.eggproxy import PackageNotFound
 from collective.eggproxy.config import EGGS_DIR
 
 class EggProxyApp(object):
 
+    def __init__(self, index_url=None, eggs_dir=EGGS_DIR):
+        self.eggs_index_proxy = IndexProxy(PackageIndex(index_url=index_url))
+        self.eggs_dir = eggs_dir
+
     def __call__(self, environ, start_response):
-        """
-        """
         path = [part for part in environ.get('PATH_INFO', '').split('/')
                 if part]
         if len(path) > 2:
@@ -54,35 +60,44 @@ class EggProxyApp(object):
         return FileApp(filename)(environ, start_response)
 
     def checkBaseIndex(self):
-        filename = os.path.join(EGGS_DIR, 'index.html')
+        filename = os.path.join(self.eggs_dir, 'index.html')
         if not os.path.exists(filename):
-            eggs_index_proxy.updateBaseIndex()
+            self.eggs_index_proxy.updateBaseIndex(self.eggs_dir)
         return filename
 
     def checkPackageIndex(self, package_name):
-        filename = os.path.join(EGGS_DIR, package_name, 'index.html')
+        filename = os.path.join(self.eggs_dir, package_name, 'index.html')
         if not os.path.exists(filename):
             try:
-                eggs_index_proxy.updatePackageIndex(package_name)
+                self.eggs_index_proxy.updatePackageIndex(package_name,
+                                                         eggs_dir=self.eggs_dir)
             except PackageNotFound:
                 return None
         return filename
 
     def checkEggFor(self, package_name, eggname):
-        filename = os.path.join(EGGS_DIR, package_name, eggname)
+        filename = os.path.join(self.eggs_dir, package_name, eggname)
         if not os.path.exists(filename):
             try:
-                eggs_index_proxy.updateEggFor(package_name, eggname)
+                self.eggs_index_proxy.updateEggFor(package_name, eggname,
+                                                   eggs_dir=self.eggs_dir)
             except ValueError:
                 return None
         return filename
 
 
 def app_factory(global_config, **local_conf):
-    return EggProxyApp()
+    default_dir = os.path.join(tempfile.gettempdir(),'eggs')
+    eggs_dir = local_conf.get('eggs_directory', default_dir)
+    if not os.path.isdir(eggs_dir):
+        print 'You must create the %r directory' % eggs_dir
+        sys.exit()
+    index_url = local_conf.get('index', 'http://pypi.python.org/simple')
+    return EggProxyApp(index_url, eggs_dir)
 
 def standalone():
-    httpserver.serve(EggProxyApp(), host='127.0.0.1', port='8888')
+    import paste.script.command
+    egg_dir = os.path.dirname(__file__)
+    sys.argv.extend(['serve', os.path.join(egg_dir, 'wsgi.ini')])
+    paste.script.command.run()
 
-if __name__ == '__main__':
-    standalone()
