@@ -4,6 +4,8 @@ History
 0.2.1 (unreleased)
 ::::::::::::::::::
 
+- don't lowercase package names
+
 - improve wsgi app
 
 - add tests
