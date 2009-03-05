@@ -27,7 +27,7 @@ like this::
     $ mkdir /tmp/eggs
     $ eggproxy_run
 
-The proxy will then ben available on the localhost on the port 8888.
+The proxy will then be available on the localhost on the port 8888.
 All package will be downloaded by default into /var/www. If this directory
 does not exists (or if you are under windows), you will need to configure it,
 as explained in the next section.
@@ -61,7 +61,7 @@ Currently its location is fixed at /etc/eggproxy.conf and looks like this::
     # update information for files older than 24h
     update_interval = 24
 
-If `/etc/eggproxy.conf` is not found, it will look into your home folder, so
+If ``/etc/eggproxy.conf`` is not found, it will look into your home folder, so
 you can alternatively put this configuration file in your home directory,
 which can be convenient under Windows.
 
@@ -73,9 +73,9 @@ You need a paste configuration file::
   $ paster make-config collective.eggproxy myconfig.ini
 
 Feel free to edit the default configuration.
-This configuration will override the `eggproxy.conf` file.
+This configuration will override the ``eggproxy.conf`` file.
 
-Then use `paster` to serve the application::
+Then use ``paster`` to serve the application::
 
   $ paster serve configfile.ini
 
@@ -107,8 +107,8 @@ An Apache setup for http://servername/pypi can be::
     </Directory>
 
 Apache must be able to write to "/path/to/pypi"! (usually Apache user is
-`www-data`). For updating proxied egg information you must add the script
-`eggproxy_update` into the crontab of this user.
+``www-data``). For updating proxied egg information you must add the script
+``eggproxy_update`` into the crontab of this user.
 
 mod_python update on Debian Etch
 ::::::::::::::::::::::::::::::::
@@ -142,7 +142,7 @@ you should have the following files:
 - libapache2-mod-python_3.3.1-3_i386.deb
 - libapache2-mod-python-doc_3.3.1-3_all.deb
 
-The last step is calling `dpkg`::
+The last step is calling ``dpkg``::
 
     $ sudo dpkg -i libapache2-mod-python_3.3.1-3_i386.deb
 

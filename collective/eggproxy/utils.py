@@ -46,7 +46,7 @@ class PackageIndex(BasePackageIndex):
         """
         return True
 
-    def process_index(self,url,page):
+    def process_index(self, url, page):
         """Process the contents of a PyPI page
         Override: don't lowercase package name
         """
