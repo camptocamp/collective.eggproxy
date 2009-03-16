@@ -20,9 +20,10 @@ from time import time
 
 from collective.eggproxy import eggs_index_proxy
 from collective.eggproxy import PackageNotFound
-from collective.eggproxy.config import config, EGGS_DIR
+from collective.eggproxy.config import config
 
 UPDATE_INTERVAL = int(config.get("default", "update_interval")) * 3600
+EGGS_DIR = config.get("default", "eggs_directory")
 TIME_LIMIT = int(time()) - UPDATE_INTERVAL
 
 def isOutDated(file_path):

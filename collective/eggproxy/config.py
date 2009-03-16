@@ -15,21 +15,29 @@
 ## along with this program; see the file COPYING. If not, write to the
 ## Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 import os
+import sys
 from ConfigParser import ConfigParser
 
-CONFIG_FILE = '/etc/eggproxy.conf'
 
+# First try: User-specific config file
+CONFIG_FILE = os.path.join(os.path.expanduser('~'), 'eggproxy.conf')
+# Second try: buildout setup, we're in bin/, config is in etc/.
 if not os.path.exists(CONFIG_FILE):
-    CONFIG_FILE = os.path.join(os.path.expanduser('~'), 'eggproxy.conf')
+    bin_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+    CONFIG_FILE = os.path.join(bin_dir, '../etc/eggproxy.conf')
+# Last try: Global config file in /etc
+if not os.path.exists(CONFIG_FILE):
+    CONFIG_FILE = '/etc/eggproxy.conf'
 
+#print "Using config file", CONFIG_FILE
 config = ConfigParser()
 config.add_section("default")
 config.set("default", "eggs_directory", "/var/www")
 config.set("default", "index", 'http://pypi.python.org/simple')
-config.set("default", "update_interval", 24)
+config.set("default", "update_interval", '24')
+config.set("default", "port", '8888')
+config.set("default", "always_refresh", '0')
+config.set("default", "timeout", '3')
 
 if os.path.exists(CONFIG_FILE):
     config.readfp(open(CONFIG_FILE))
-
-EGGS_DIR = config.get("default", "eggs_directory")
-

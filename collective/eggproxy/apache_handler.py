@@ -18,7 +18,10 @@ import os
 from mod_python import apache
 
 from collective.eggproxy import eggs_index_proxy
-from collective.eggproxy.config import EGGS_DIR
+from collective.eggproxy.config import config
+
+EGGS_DIR = config.get("default", "eggs_directory")
+
 
 def fixup_handler(req):
     options = req.get_options()

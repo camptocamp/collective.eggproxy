@@ -36,10 +36,13 @@ from collective.eggproxy.config import config
 
 EGGS_DIR = config.get("default", "eggs_directory")
 INDEX_URL = config.get("default", "index")
+#INDEX is defined *after* the PackageIndex class.
+
 
 class PackageIndex(BasePackageIndex):
     """
     """
+
     def can_add(self, dist):
         """Overrides PackageIndex.can_add method to remove filter on python
     major version: we want packages for all versions, all platforms
@@ -50,6 +53,7 @@ class PackageIndex(BasePackageIndex):
         """Process the contents of a PyPI page
         Override: don't lowercase package name
         """
+
         def scan(link):
             # Process a URL to see if it's for a package page
             if link.startswith(self.index_url):
@@ -61,7 +65,7 @@ class PackageIndex(BasePackageIndex):
                     pkg = safe_name(parts[0])
                     ver = safe_version(parts[1])
                     # changed "pkg.lower()" to "pkg"
-                    self.package_pages.setdefault(pkg,{})[link] = True
+                    self.package_pages.setdefault(pkg, {})[link] = True
                     return to_filename(pkg), to_filename(ver)
             return None, None
 
@@ -91,9 +95,11 @@ class PackageIndex(BasePackageIndex):
 
 INDEX = PackageIndex(index_url=INDEX_URL)
 
+
 class PackageNotFound(Exception):
     """
     """
+
 
 class IndexProxy(object):
 
@@ -101,22 +107,22 @@ class IndexProxy(object):
         self.index = index or INDEX
 
     def updateBaseIndex(self, eggs_dir=EGGS_DIR):
-       """Update base index.html
-       """
-       file_path = os.path.join(eggs_dir, 'index.html')
-       html = open(file_path, 'w')
+        """Update base index.html
+        """
+        file_path = os.path.join(eggs_dir, 'index.html')
+        html = open(file_path, 'w')
 
-       self.index.scan_all()
-       package_names = self.index.package_pages.keys()
-       package_names.sort()
+        self.index.scan_all()
+        package_names = self.index.package_pages.keys()
+        package_names.sort()
 
-       print >> html, "<html><head><title>Simple Index</title></head><body>"
-       for pack_name in package_names:
-           print >> html, '<a href="%s/">%s</a><br/>' % (pack_name, pack_name)
-       print >> html, '</body></html>'
+        print >> html, "<html><head><title>Simple Index</title></head><body>"
+        for pack_name in package_names:
+            print >> html, '<a href="%s/">%s</a><br/>' % (pack_name, pack_name)
+        print >> html, '</body></html>'
 
-       html.close()
-       del html
+        html.close()
+        del html
 
     def _lookupPackage(self, package_name):
         requirement = Requirement.parse(package_name)
@@ -142,7 +148,7 @@ class IndexProxy(object):
                 # this is a module installed in system
                 continue
 
-            filename, md5  = egg_info_for_url(dist.location)
+            filename, md5 = egg_info_for_url(dist.location)
             print >> html, (
                 '<a href="%s#%s" rel="download">%s</a><br />'
                 % (filename, md5, filename)
@@ -163,7 +169,7 @@ class IndexProxy(object):
                 # to download a fresh package
                 continue
 
-            filename, md5  = egg_info_for_url(dist.location)
+            filename, md5 = egg_info_for_url(dist.location)
             if filename == eggname:
                 tmp = tempfile.gettempdir()
                 tmp_location = self.index.download(dist.location, tmp)
@@ -171,5 +177,3 @@ class IndexProxy(object):
                 return
 
         raise ValueError, "Egg '%s' not found in index" % eggname
-
-

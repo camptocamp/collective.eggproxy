@@ -4,6 +4,17 @@ History
 0.2.1 (unreleased)
 ::::::::::::::::::
 
+- Updated documentation for buildout change and always_refresh change.
+  [reinout]
+
+- Attempt ../etc/eggproxy.conf as config location to help buildout setups.
+  [reinout]
+
+- Added always_refresh (and timeout) option to always attempt a real pypi
+  connection to ensure freshness.  [reinout]
+
+- Added port option to configuration. [reinout]
+
 - don't lowercase package names
 
 - improve wsgi app

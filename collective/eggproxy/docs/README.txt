@@ -50,20 +50,34 @@ That's it !
 Advanced configuration
 ======================
 
-collective.eggproxy can use a configuration file:
-
-Currently its location is fixed at /etc/eggproxy.conf and looks like this::
+collective.eggproxy can use a configuration file like this::
 
     [default]
-    eggs_directory = /path/to/pypi
+    eggs_directory = /path/to/our/cache
     index = http://pypi.python.org/simple
 
-    # update information for files older than 24h
+    # Update information for files older than 24h
     update_interval = 24
+    # Port number where proxy will run
+    port = 8888
+    # always_refresh is off by default. Setting it to 1 forces eggproxy to
+    # always attempt a pypi connection. Slower but fresher.
+    always_refresh = 0 
+    # timeout is only needed for always_refresh: it sets a socket timeout.
+    timeout = 3
 
-If ``/etc/eggproxy.conf`` is not found, it will look into your home folder, so
-you can alternatively put this configuration file in your home directory,
-which can be convenient under Windows.
+All options apart from eggs_directory are optional.
+
+collective.eggproxy looks in three locations:
+
+* An ``eggproxy.conf`` in your homedir. This can also be convenient on Windows
+  where ``/etc/`` doesn't exist.
+
+* ``../etc/eggproxy.conf`` as seen from the binary, which you can use for
+  buildout setups (see buildout documentation below).
+
+* ``/etc/eggproxy.conf``.
+
 
 Running the proxy using Paste
 =============================
@@ -82,6 +96,42 @@ Then use ``paster`` to serve the application::
 And test it::
 
   $ easy_install -i http://localhost:8888/ -H "*localhost*" iw.fss
+
+
+Installing collective.eggproxy in a buildout
+============================================
+
+A quick way to set up collective.eggproxy is by installing it in a
+buildout.  The advantage is that it is all nicely contained in one
+directory.  You can use the following buildout config as an example::
+
+  [buildout]
+  parts = console_scripts
+
+  [console_scripts]
+  recipe = zc.recipe.egg
+  eggs = collective.eggproxy
+
+  [configuration]
+  recipe = collective.recipe.template
+  input = etc/eggproxy.conf.in
+  output = etc/eggproxy.conf
+
+
+This will put the eggproxy_run and eggproxy_update scripts in the ``bin/`` directory.
+Add a subdirectory ``etc/`` inside the buildout with an ``eggproxy.conf.in``
+file::
+
+  [default]
+  eggs_directory = ${buildout:directory}/var/cache
+  #update_interval = 24
+  #index = http://pypi.python.org/simple
+  #port = 8888
+
+`collective.recipe.template
+<http://pypi.python.org/pypi/collective.recipe.template>`_ will turn that into
+an etc/eggproxy.conf with the correct settings
+
 
 Using the proxy behind Apache
 =============================

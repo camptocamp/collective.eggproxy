@@ -17,21 +17,37 @@
 ## along with this program; see the file COPYING. If not, write to the
 ## Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 import os
+import socket
 import sys
-import tempfile
+from paste import httpserver
 from paste.script.appinstall import Installer as BaseInstaller
-from paste.config import ConfigMiddleware
-from paste.config import CONFIG
 from paste.fileapp import FileApp
 from paste.httpexceptions import HTTPNotFound
 from collective.eggproxy.utils import PackageIndex
 from collective.eggproxy import IndexProxy
 from collective.eggproxy import PackageNotFound
-from collective.eggproxy.config import EGGS_DIR
+from collective.eggproxy.config import config
+
+ALWAYS_REFRESH = config.getboolean('default', 'always_refresh')
+if ALWAYS_REFRESH:
+    print "Always-refresh mode switched on"
+    # Apply timeout setting right here. Might not be the best spot. Timeout is
+    # needed for the always_refresh option to keep a down pypi from blocking
+    # the proxy.
+    timeout = config.get('default', 'timeout')
+    socket.setdefaulttimeout(int(timeout))
+
 
 class EggProxyApp(object):
 
-    def __init__(self, index_url=None, eggs_dir=EGGS_DIR):
+    def __init__(self, index_url=None, eggs_dir=None):
+        if not index_url:
+            index_url = config.get('default', 'index')
+        if not eggs_dir:
+            eggs_dir = config.get('default', 'eggs_directory')
+        if not os.path.isdir(eggs_dir):
+            print 'You must create the %r directory' % eggs_dir
+            sys.exit()
         self.eggs_index_proxy = IndexProxy(PackageIndex(index_url=index_url))
         self.eggs_dir = eggs_dir
 
@@ -70,10 +86,22 @@ class EggProxyApp(object):
         filename = os.path.join(self.eggs_dir, package_name, 'index.html')
         if not os.path.exists(filename):
             try:
-                self.eggs_index_proxy.updatePackageIndex(package_name,
-                                                         eggs_dir=self.eggs_dir)
+                self.eggs_index_proxy.updatePackageIndex(
+                    package_name,
+                    eggs_dir=self.eggs_dir)
             except PackageNotFound:
                 return None
+        elif ALWAYS_REFRESH:
+            # Force refresh
+            try:
+                self.eggs_index_proxy.updatePackageIndex(
+                    package_name,
+                    eggs_dir=self.eggs_dir)
+            except PackageNotFound:
+                pass
+        else:
+            # Just use the proxied copy.
+            pass
         return filename
 
     def checkEggFor(self, package_name, eggname):
@@ -88,30 +116,36 @@ class EggProxyApp(object):
 
 
 def app_factory(global_config, **local_conf):
-    default_dir = os.path.join(tempfile.gettempdir(),'eggs')
-    eggs_dir = local_conf.get('eggs_directory', default_dir)
-    if not os.path.isdir(eggs_dir):
-        print 'You must create the %r directory' % eggs_dir
-        sys.exit()
-    index_url = local_conf.get('index', 'http://pypi.python.org/simple')
+    # Grab config from wsgi .ini file. If not specified, config.py's values
+    # take over.
+    eggs_dir = local_conf.get('eggs_directory', None)
+    index_url = local_conf.get('index', None)
     return EggProxyApp(index_url, eggs_dir)
 
 
 class Installer(BaseInstaller):
     use_cheetah = False
     config_file = 'deployment.ini_tmpl'
+
     def config_content(self, command, vars):
         import pkg_resources
         module = 'collective.eggproxy'
         if pkg_resources.resource_exists(module, self.config_file):
             return self.template_renderer(
-                  pkg_resources.resource_string(module, self.config_file),
-                                                vars, filename=self.config_file)
+                pkg_resources.resource_string(module, self.config_file),
+                vars,
+                filename=self.config_file)
 
 
 def standalone():
-    import paste.script.command
-    egg_dir = os.path.dirname(__file__)
-    sys.argv.extend(['serve', os.path.join(egg_dir, 'wsgi.ini')])
-    paste.script.command.run()
-
+    port = config.get('default', 'port')
+    # 0.2.0 way of starting the httpserver, but using the config'ed port
+    # number instead of a hardcoded 8888.
+    httpserver.serve(EggProxyApp(), host='127.0.0.1', port=port)
+    # Post-0.2.0 way of starting the server using hardcoded config by means of
+    # the package-internal .ini file. This does not allow starting it on a
+    # different port, so I [reinout] commented it out for now.
+    #import paste.script.command
+    #this_dir = os.path.dirname(__file__)
+    #sys.argv.extend(['serve', os.path.join(this_dir, 'wsgi.ini')])
+    #paste.script.command.run()
