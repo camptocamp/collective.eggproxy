@@ -106,7 +106,7 @@ buildout.  The advantage is that it is all nicely contained in one
 directory.  You can use the following buildout config as an example::
 
   [buildout]
-  parts = console_scripts
+  parts = console_scripts configuration
 
   [console_scripts]
   recipe = zc.recipe.egg
