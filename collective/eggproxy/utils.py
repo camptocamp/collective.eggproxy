@@ -34,6 +34,7 @@ from setuptools.package_index import (
 from pkg_resources import Requirement
 from collective.eggproxy.config import config
 
+ALWAYS_REFRESH = config.getboolean('default', 'always_refresh')
 EGGS_DIR = config.get("default", "eggs_directory")
 INDEX_URL = config.get("default", "index")
 #INDEX is defined *after* the PackageIndex class.
@@ -53,6 +54,10 @@ class PackageIndex(BasePackageIndex):
         """Process the contents of a PyPI page
         Override: don't lowercase package name
         """
+        if ALWAYS_REFRESH:
+            # Zap ourselves from the fetched url list, otherwise we'll
+            # never be updated as long as the server runs.
+            del self.fetched_urls[url]
 
         def scan(link):
             # Process a URL to see if it's for a package page
@@ -139,11 +144,16 @@ class IndexProxy(object):
             os.mkdir(package_path)
 
         html_path = os.path.join(package_path, 'index.html')
+        dists = self.index[package_name]
+        if not dists and os.path.exists(html_path):
+            # We already have a cached index page and there are no dists.
+            # Pypi is probably down, so we keep our existing one.
+            return
         html = open(html_path, 'w')
         title = "Links for %s" % package_name
         print >> html, "<html><head><title>%s</title></head>" % package_name
         print >> html, "<body><h1>%s</h1>" % package_name
-        for dist in self.index[package_name]:
+        for dist in dists:
             if getattr(dist, "module_path", None) is not None:
                 # this is a module installed in system
                 continue
