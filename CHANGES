@@ -1,11 +1,12 @@
 History
 =======
 
-0.4 (unreleased)
-::::::::::::::::
+0.3.1 (2009-04-28)
+::::::::::::::::::
 
 - Fix for non-updating index pages despite ALWAYS_REFRESH setting. Cause:
   already downloaded urls were not re-processed.  [reinout]
+
 
 0.3 (2009-03-16)
 ::::::::::::::::
@@ -26,6 +27,7 @@ History
 - improve wsgi app
 
 - add tests
+
 
 0.2.0 (2008-09-22)
 ::::::::::::::::::

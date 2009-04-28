@@ -20,7 +20,7 @@ This module contains the tool of collective.eggproxy
 import os
 from setuptools import setup, find_packages
 
-version = '0.4'
+version = '0.3.1'
 
 README = os.path.join(os.path.dirname(__file__),
           'collective', 'eggproxy', 'docs', 'README.txt')
