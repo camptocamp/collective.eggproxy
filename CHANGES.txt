@@ -5,7 +5,8 @@ Changelog
 0.5 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Release fixes (setup.cfg that resulted in a horrid "0.4dev-r1234" release).
+  No functional changes.
 
 
 0.4 (2009-10-19)
