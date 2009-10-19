@@ -17,6 +17,7 @@
 import os
 import sys
 from ConfigParser import ConfigParser
+from ConfigParser import NoSectionError
 
 
 # First try: User-specific config file
@@ -41,3 +42,14 @@ config.set("eggproxy", "timeout", '3')
 
 if os.path.exists(CONFIG_FILE):
     config.readfp(open(CONFIG_FILE))
+    # Check for old [default] section that fails with python2.6 had thus has
+    # been changed to [eggproxy] in 0.4
+    try:
+        config.get('default', 'eggs_directory')
+        old_section_name = True
+    except NoSectionError:
+        old_section_name = False
+    if old_section_name:
+        print "WARNING: rename the [default] section in the config file"
+        print "to [eggproxy].  This is needed for python2.6 compatibility."
+        sys.exit(1)
