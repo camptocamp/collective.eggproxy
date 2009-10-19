@@ -51,5 +51,6 @@ if os.path.exists(CONFIG_FILE):
         old_section_name = False
     if old_section_name:
         print "WARNING: rename the [default] section in the config file"
+        print CONFIG_FILE
         print "to [eggproxy].  This is needed for python2.6 compatibility."
         sys.exit(1)
