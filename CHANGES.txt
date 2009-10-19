@@ -5,7 +5,7 @@ Changelog
 0.6 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Added svn url to README.  [reinout]
 
 
 0.5 (2009-10-19)
