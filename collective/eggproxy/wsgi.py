@@ -28,13 +28,13 @@ from collective.eggproxy import IndexProxy
 from collective.eggproxy import PackageNotFound
 from collective.eggproxy.config import config
 
-ALWAYS_REFRESH = config.getboolean('default', 'always_refresh')
+ALWAYS_REFRESH = config.getboolean('eggproxy', 'always_refresh')
 if ALWAYS_REFRESH:
     print "Always-refresh mode switched on"
     # Apply timeout setting right here. Might not be the best spot. Timeout is
     # needed for the always_refresh option to keep a down pypi from blocking
     # the proxy.
-    timeout = config.get('default', 'timeout')
+    timeout = config.get('eggproxy', 'timeout')
     socket.setdefaulttimeout(int(timeout))
 
 
@@ -42,9 +42,9 @@ class EggProxyApp(object):
 
     def __init__(self, index_url=None, eggs_dir=None):
         if not index_url:
-            index_url = config.get('default', 'index')
+            index_url = config.get('eggproxy', 'index')
         if not eggs_dir:
-            eggs_dir = config.get('default', 'eggs_directory')
+            eggs_dir = config.get('eggproxy', 'eggs_directory')
         if not os.path.isdir(eggs_dir):
             print 'You must create the %r directory' % eggs_dir
             sys.exit()
@@ -138,7 +138,7 @@ class Installer(BaseInstaller):
 
 
 def standalone():
-    port = config.get('default', 'port')
+    port = config.get('eggproxy', 'port')
     # 0.2.0 way of starting the httpserver, but using the config'ed port
     # number instead of a hardcoded 8888.
     httpserver.serve(EggProxyApp(), host='127.0.0.1', port=port)

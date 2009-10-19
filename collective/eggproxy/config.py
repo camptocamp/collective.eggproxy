@@ -31,13 +31,13 @@ if not os.path.exists(CONFIG_FILE):
 
 #print "Using config file", CONFIG_FILE
 config = ConfigParser()
-config.add_section("default")
-config.set("default", "eggs_directory", "/var/www")
-config.set("default", "index", 'http://pypi.python.org/simple')
-config.set("default", "update_interval", '24')
-config.set("default", "port", '8888')
-config.set("default", "always_refresh", '0')
-config.set("default", "timeout", '3')
+config.add_section("eggproxy")
+config.set("eggproxy", "eggs_directory", "/var/www")
+config.set("eggproxy", "index", 'http://pypi.python.org/simple')
+config.set("eggproxy", "update_interval", '24')
+config.set("eggproxy", "port", '8888')
+config.set("eggproxy", "always_refresh", '0')
+config.set("eggproxy", "timeout", '3')
 
 if os.path.exists(CONFIG_FILE):
     config.readfp(open(CONFIG_FILE))

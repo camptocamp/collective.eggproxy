@@ -5,6 +5,10 @@ Changelog
 0.4 (unreleased)
 ----------------
 
+- Fix compatibility issue with Python 2.6 New python version disallow to use
+  config.add_section('DEFAULT') (see : http://bugs.python.org/issue1781 and
+  ConfigParser documentation).  Patch by Stéphane Klein.
+
 - Updated maintainer email address.  [reinout]
 
 

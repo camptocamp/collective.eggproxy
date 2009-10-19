@@ -51,7 +51,7 @@ Advanced configuration
 
 collective.eggproxy can use a configuration file like this::
 
-    [default]
+    [eggproxy]
     eggs_directory = /path/to/our/cache
     index = http://pypi.python.org/simple
 
@@ -121,7 +121,7 @@ This will put the eggproxy_run and eggproxy_update scripts in the ``bin/`` direc
 Add a subdirectory ``etc/`` inside the buildout with an ``eggproxy.conf.in``
 file::
 
-  [default]
+  [eggproxy]
   eggs_directory = ${buildout:directory}/var/cache
   #update_interval = 24
   #index = http://pypi.python.org/simple

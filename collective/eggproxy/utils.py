@@ -34,9 +34,9 @@ from setuptools.package_index import (
 from pkg_resources import Requirement
 from collective.eggproxy.config import config
 
-ALWAYS_REFRESH = config.getboolean('default', 'always_refresh')
-EGGS_DIR = config.get("default", "eggs_directory")
-INDEX_URL = config.get("default", "index")
+ALWAYS_REFRESH = config.getboolean('eggproxy', 'always_refresh')
+EGGS_DIR = config.get("eggproxy", "eggs_directory")
+INDEX_URL = config.get("eggproxy", "index")
 #INDEX is defined *after* the PackageIndex class.
 
 
