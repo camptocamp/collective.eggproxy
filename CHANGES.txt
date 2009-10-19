@@ -1,22 +1,22 @@
-History
-=======
+Changelog
+=========
 
 
 0.4 (unreleased)
-::::::::::::::::
+----------------
 
-- Nothing yet.
+- Updated maintainer email address.  [reinout]
 
 
 0.3.1 (2009-04-28)
-::::::::::::::::::
+------------------
 
 - Fix for non-updating index pages despite ALWAYS_REFRESH setting. Cause:
   already downloaded urls were not re-processed.  [reinout]
 
 
 0.3 (2009-03-16)
-::::::::::::::::
+----------------
 
 - Updated documentation for buildout change and always_refresh change.
   [reinout]
@@ -37,7 +37,7 @@ History
 
 
 0.2.0 (2008-09-22)
-::::::::::::::::::
+------------------
 
 - initial version as collective.eggproxy. This package was formerly known as
   iw.eggproxy (https://ingeniweb.svn.sourceforge.net/svnroot/ingeniweb/iw.eggproxy)
@@ -53,6 +53,6 @@ History
 - fixed malformed tag in generated indexes
 
 0.1.0 (2008-06-06)
-::::::::::::::::::
+------------------
 
 - initial version created by IngeniSkel

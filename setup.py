@@ -23,21 +23,19 @@ from setuptools import setup, find_packages
 version = '0.4dev'
 
 README = os.path.join(os.path.dirname(__file__),
-          'collective', 'eggproxy', 'docs', 'README.txt')
-CHANGES = os.path.join(os.path.dirname(__file__), 'CHANGES')
+                      'collective', 'eggproxy', 'README.txt')
+CHANGES = os.path.join(os.path.dirname(__file__), 'CHANGES.txt')
+CONTRIB= os.path.join(os.path.dirname(__file__), 'CONTRIBUTORS.txt')
 
-long_description = (
-    open(README).read()
-    + '\n'
-    + open(CHANGES).read()
-    + '\n\n'
-    )
+long_description = '\n\n'.join([
+    open(README).read(),
+    open(CHANGES).read(),
+    open(CONTRIB).read()])
 
 console_scripts = [
     'eggproxy_update = collective.eggproxy.update_script:updateCache',
     'eggproxy_run = collective.eggproxy.wsgi:standalone'
     ]
-
 
 
 setup(name='collective.eggproxy',
@@ -50,8 +48,8 @@ setup(name='collective.eggproxy',
         "Topic :: Software Development :: Libraries :: Python Modules",
         ],
       keywords='setuptools easy_install index proxy',
-      author='Ingeniweb',
-      author_email='support@ingeniweb.com',
+      author='Ingeniweb; current maintainer Reinout van Rees (The Health Agency)',
+      author_email='reinout@vanrees.org',
       url='http://pypi.python.org/pypi/collective.eggproxy',
       license='GPL',
       packages=find_packages(exclude=['ez_setup']),
