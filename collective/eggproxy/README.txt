@@ -195,3 +195,10 @@ The last step is calling ``dpkg``::
 
     $ sudo dpkg -i libapache2-mod-python_3.3.1-3_i386.deb
 
+
+Development
+-----------
+
+The svn repository is the plone collective:
+https://svn.plone.org/svn/collective/collective.eggproxy/trunk
+
