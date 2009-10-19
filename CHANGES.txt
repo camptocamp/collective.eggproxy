@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.5 (unreleased)
+0.5 (2009-10-19)
 ----------------
 
 - Release fixes (setup.cfg that resulted in a horrid "0.4dev-r1234" release).
