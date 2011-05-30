@@ -105,7 +105,10 @@ class PackageIndex(BasePackageIndex):
 
         # process an index page into the package-page index
         for match in HREF.finditer(page):
-            scan( urlparse.urljoin(url, htmldecode(match.group(1))) )
+            try:
+                scan( urlparse.urljoin(url, htmldecode(match.group(1))) )
+            except ValueError:
+                pass
 
         pkg, ver = scan(url)   # ensure this page is in the page index
         if pkg:
