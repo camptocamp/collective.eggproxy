@@ -50,15 +50,44 @@ class PackageIndex(BasePackageIndex):
         """
         return True
 
+    def find_packages(self, requirement):
+        """Override: purge cached url if ALWAYS_REFRESH"""
+        # purged_url caches the urls that has been already purged so that
+        # we won't purge the same url again
+        purged_url = {}
+
+        def before_scan_url(url):
+            if ALWAYS_REFRESH and url in self.fetched_urls \
+                    and url not in purged_url:
+                # Zap ourselves from the fetched url list, otherwise we'll
+                # never be updated as long as the server runs.
+                # And mark this url as already purged
+                del self.fetched_urls[url]
+                purged_url[url] = True
+
+        url = self.index_url + requirement.unsafe_name+'/'
+        before_scan_url(url)
+        self.scan_url(url)
+
+        if not self.package_pages.get(requirement.key):
+            # Fall back to safe version of the name
+            url = self.index_url + requirement.project_name+'/'
+            before_scan_url(url)
+            self.scan_url(url)
+
+        if not self.package_pages.get(requirement.key):
+            # We couldn't find the target package, so search the index page too
+            self.not_found_in_index(requirement)
+
+        for url in list(self.package_pages.get(requirement.key,())):
+            # scan each page that might be related to the desired package
+            before_scan_url(url)
+            self.scan_url(url)
+
     def process_index(self, url, page):
         """Process the contents of a PyPI page
         Override: don't lowercase package name
         """
-        if ALWAYS_REFRESH:
-            # Zap ourselves from the fetched url list, otherwise we'll
-            # never be updated as long as the server runs.
-            del self.fetched_urls[url]
-
         def scan(link):
             # Process a URL to see if it's for a package page
             if link.startswith(self.index_url):
