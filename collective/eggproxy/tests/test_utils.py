@@ -33,6 +33,19 @@ def test_package():
     assert '<html><head><title>collective.eggproxy</title></head>' in page
 
 @with_setup(setup_func, teardown_func)
+def test_local_packages():
+    dirname = os.path.join(tempdir, 'collective.eggproxy')
+    os.mkdir(dirname)
+    dummy = open(os.path.join(dirname, 'collective.eggproxy-0.0.0.tar.gz'),'w')
+    dummy.write('')
+    dummy.close()
+
+    index.updatePackageIndex('collective.eggproxy', tempdir)
+
+    page = open(os.path.join(dirname, 'index.html')).read()
+    assert '<a href="collective.eggproxy-0.0.0.tar.gz" rel="download">collective.eggproxy-0.0.0.tar.gz</a>' in page
+
+@with_setup(setup_func, teardown_func)
 def test_package_case_sensitive():
     index.updatePackageIndex('Paste', tempdir)
     dirname = os.path.join(tempdir, 'Paste')
