@@ -78,7 +78,7 @@ class EggProxyApp(object):
 
     def checkBaseIndex(self):
         filename = os.path.join(self.eggs_dir, 'index.html')
-        if not os.path.exists(filename):
+        if not os.path.exists(filename) or ALWAYS_REFRESH:
             self.eggs_index_proxy.updateBaseIndex(self.eggs_dir)
         return filename
 
