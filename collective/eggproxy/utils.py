@@ -149,8 +149,13 @@ class IndexProxy(object):
         file_path = os.path.join(eggs_dir, 'index.html')
         html = open(file_path, 'w')
 
+        # take care of the already cached eggs in repository:
+        # union these packages with the remote packages
+        local_package_names = [item for item in os.listdir(eggs_dir)
+                if os.path.isdir(os.path.join(eggs_dir,item))]
         self.index.scan_all()
-        package_names = self.index.package_pages.keys()
+        package_names = list(set(self.index.package_pages.keys()).union(
+            set(local_package_names)))
         package_names.sort()
 
         print >> html, "<html><head><title>Simple Index</title></head><body>"
@@ -168,13 +173,21 @@ class IndexProxy(object):
     def updatePackageIndex(self, package_name, eggs_dir=EGGS_DIR):
         """Update info for a specific package
         """
-        self._lookupPackage(package_name)
-        if not self.index[package_name]:
-            raise PackageNotFound, "Package '%s' does not exists or has no eggs" % package_name
+
         package_path = os.path.join(eggs_dir, package_name)
+        local_eggs = {}
+        if os.path.exists(package_path):
+            for pkg in os.listdir(package_path):
+                if pkg != "index.html":
+                    local_eggs[pkg] = True
+
+        self._lookupPackage(package_name)
+        if not self.index[package_name] and len(local_eggs) == 0:
+            raise PackageNotFound, "Package '%s' does not exists or has no " \
+                    "eggs" % package_name
+
         if not os.path.exists(package_path):
             os.mkdir(package_path)
-
         html_path = os.path.join(package_path, 'index.html')
         dists = self.index[package_name]
         if not dists and os.path.exists(html_path):
@@ -194,6 +207,13 @@ class IndexProxy(object):
             print >> html, (
                 '<a href="%s#%s" rel="download">%s</a><br />'
                 % (filename, md5, filename)
+                )
+            if filename in local_eggs:
+                del local_eggs[filename]
+        for egg in local_eggs:
+            print >> html, (
+                '<a href="%s" rel="download">%s</a><br />'
+                % (egg, egg)
                 )
 
         print >> html, "</body></html>"
