@@ -19,6 +19,7 @@ import tempfile
 import urllib2
 import urlparse
 import shutil
+import sys
 from setuptools.package_index import PackageIndex as BasePackageIndex
 from setuptools.package_index import (
     egg_info_for_url,
@@ -232,10 +233,16 @@ class IndexProxy(object):
                 continue
 
             filename, md5 = egg_info_for_url(dist.location)
+            # There may be more than one filename that matches: if the first n
+            # fail, we want to try until one works!
             if filename == eggname:
                 tmp = tempfile.gettempdir()
-                tmp_location = self.index.download(dist.location, tmp)
-                shutil.move(tmp_location, file_path)
-                return
+                try:
+                    tmp_location = self.index.download(dist.location, tmp)
+                    sys.stderr.write('Downloaded %s\n' % dist.location)
+                    shutil.move(tmp_location, file_path)
+                    return
+                except Exception, err:
+                    sys.stderr.write('Error downloading %s: \n\t%s\n' % (dist.location, err))
 
         raise ValueError, "Egg '%s' not found in index" % eggname
