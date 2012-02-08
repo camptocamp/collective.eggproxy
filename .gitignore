@@ -4,3 +4,5 @@ bin
 *.pyc
 develop-eggs
 parts
+dist
+build
