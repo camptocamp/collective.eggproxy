@@ -23,9 +23,9 @@ from setuptools import setup, find_packages
 version = '0.6dev'
 
 README = os.path.join(os.path.dirname(__file__),
-                      'collective', 'eggproxy', 'README.txt')
-CHANGES = os.path.join(os.path.dirname(__file__), 'CHANGES.txt')
-CONTRIB= os.path.join(os.path.dirname(__file__), 'CONTRIBUTORS.txt')
+                      'README.rst')
+CHANGES = os.path.join(os.path.dirname(__file__), 'CHANGES.rst')
+CONTRIB= os.path.join(os.path.dirname(__file__), 'CONTRIBUTORS.rst')
 
 long_description = '\n\n'.join([
     open(README).read(),
