@@ -61,7 +61,7 @@ collective.eggproxy can use a configuration file like this::
     port = 8888
     # always_refresh is off by default. Setting it to 1 forces eggproxy to
     # always attempt a pypi connection. Slower but fresher.
-    always_refresh = 0 
+    always_refresh = 0
     # timeout is only needed for always_refresh: it sets a socket timeout.
     timeout = 3
 
@@ -199,6 +199,12 @@ The last step is calling ``dpkg``::
 Development
 -----------
 
-The svn repository is the plone collective:
-https://svn.plone.org/svn/collective/collective.eggproxy/trunk
+Development happens now on github at
+https://github.com/bbinet/collective.eggproxy
+
+The issue tracker is there, too. Feel free to make bug reports there or to
+fork the code to fix errors. That's what github is The.
+
+(Historic note: the code used to live at
+https://svn.plone.org/svn/collective/collective.eggproxy/trunk)
 
