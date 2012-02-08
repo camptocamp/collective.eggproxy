@@ -200,7 +200,7 @@ Development
 -----------
 
 Development happens now on github at
-https://github.com/bbinet/collective.eggproxy
+https://github.com/camptocamp/collective.eggproxy
 
 The issue tracker is there, too. Feel free to make bug reports there or to
 fork the code to fix errors. That's what github is The.
