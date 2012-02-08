@@ -1,7 +1,11 @@
 Contributors
 ============
 
-Author: Bertrand Mathieu while at Ingeniweb [b_mathieu]
+Original author: Bertrand Mathieu while at Ingeniweb.
 
-Current maintainer: `Reinout van Rees <http://reinout.vanrees.org>`_ at `The
-Health Agency <http://www.thehealthagency.com>`_
+Maintainer and fixer in 2009-2011: `Reinout van Rees
+<http://reinout.vanrees.org>`_.
+
+Currently most active: Bruno Binet. His `github repository
+<https://github.com/bbinet/collective.eggproxy>`_ is now the canonical
+source.
