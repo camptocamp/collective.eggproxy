@@ -149,3 +149,7 @@ def standalone():
     #this_dir = os.path.dirname(__file__)
     #sys.argv.extend(['serve', os.path.join(this_dir, 'wsgi.ini')])
     #paste.script.command.run()
+
+
+if __name__=='__main__':
+    standalone()
