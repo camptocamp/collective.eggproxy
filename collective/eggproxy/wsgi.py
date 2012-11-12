@@ -19,18 +19,23 @@
 import os
 import socket
 import sys
+import logging
+
 from paste import httpserver
 from paste.script.appinstall import Installer as BaseInstaller
 from paste.fileapp import FileApp
 from paste.httpexceptions import HTTPNotFound
+
 from collective.eggproxy.utils import PackageIndex
 from collective.eggproxy import IndexProxy
 from collective.eggproxy import PackageNotFound
 from collective.eggproxy.config import config
 
+logger = logging.getLogger(__name__)
+
 ALWAYS_REFRESH = config.getboolean('eggproxy', 'always_refresh')
 if ALWAYS_REFRESH:
-    print "Always-refresh mode switched on"
+    logger.debug("Always-refresh mode switched on")
     # Apply timeout setting right here. Might not be the best spot. Timeout is
     # needed for the always_refresh option to keep a down pypi from blocking
     # the proxy.
@@ -46,7 +51,7 @@ class EggProxyApp(object):
         if not eggs_dir:
             eggs_dir = config.get('eggproxy', 'eggs_directory')
         if not os.path.isdir(eggs_dir):
-            print 'You must create the %r directory' % eggs_dir
+            logger.error('You must create the %r directory' % eggs_dir)
             sys.exit()
         self.eggs_index_proxy = IndexProxy(PackageIndex(index_url=index_url))
         self.eggs_dir = eggs_dir
@@ -106,12 +111,19 @@ class EggProxyApp(object):
 
     def checkEggFor(self, package_name, eggname):
         filename = os.path.join(self.eggs_dir, package_name, eggname)
+        logger.debug('Asking for package: %s - egg: %s'
+                % (package_name, eggname))
         if not os.path.exists(filename):
+            logger.debug('Not in cache, let\'s download it from package index')
             try:
                 self.eggs_index_proxy.updateEggFor(package_name, eggname,
                                                    eggs_dir=self.eggs_dir)
-            except ValueError:
+            except ValueError as e:
+                logger.debug('Download error: %s' % e)
                 return None
+        else:
+            logger.debug('Found in cache: %s' % filename)
+
         return filename
 
 
