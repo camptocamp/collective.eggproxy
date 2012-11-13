@@ -20,6 +20,7 @@ import urllib2
 import urlparse
 import shutil
 import logging
+import socket
 
 from setuptools.package_index import PackageIndex as BasePackageIndex
 from setuptools.package_index import (
@@ -34,19 +35,16 @@ from setuptools.package_index import (
     )
 from pkg_resources import Requirement
 
-from collective.eggproxy.config import config
-
 logger = logging.getLogger(__name__)
-
-ALWAYS_REFRESH = config.getboolean('eggproxy', 'always_refresh')
-EGGS_DIR = config.get("eggproxy", "eggs_directory")
-INDEX_URL = config.get("eggproxy", "index")
-#INDEX is defined *after* the PackageIndex class.
 
 
 class PackageIndex(BasePackageIndex):
     """
     """
+
+    def __init__(self, always_refresh, **kwargs):
+        super(PackageIndex, self).__init__(**kwargs)
+        self.always_refresh = always_refresh
 
     def can_add(self, dist):
         """Overrides PackageIndex.can_add method to remove filter on python
@@ -55,13 +53,13 @@ class PackageIndex(BasePackageIndex):
         return True
 
     def find_packages(self, requirement):
-        """Override: purge cached url if ALWAYS_REFRESH"""
+        """Override: purge cached url if self.always_refresh"""
         # purged_url caches the urls that has been already purged so that
         # we won't purge the same url again
         purged_url = {}
 
         def before_scan_url(url):
-            if ALWAYS_REFRESH and url in self.fetched_urls \
+            if self.always_refresh and url in self.fetched_urls \
                     and url not in purged_url:
                 # Zap ourselves from the fetched url list, otherwise we'll
                 # never be updated as long as the server runs.
@@ -134,9 +132,6 @@ class PackageIndex(BasePackageIndex):
             return ""   # no sense double-scanning non-package pages
 
 
-INDEX = PackageIndex(index_url=INDEX_URL)
-
-
 class PackageNotFound(Exception):
     """
     """
@@ -144,12 +139,22 @@ class PackageNotFound(Exception):
 
 class IndexProxy(object):
 
-    def __init__(self, index=None):
-        self.index = index or INDEX
+    def __init__(self, config):
+        self.config = config
+        self.index = PackageIndex(
+                config.always_refresh, index_url=config.index)
 
-    def updateBaseIndex(self, eggs_dir=EGGS_DIR):
+        if config.always_refresh:
+            # Apply timeout setting right here. Might not be the best spot.
+            # Timeout is needed for the always_refresh option to keep a down
+            # pypi from blocking the proxy.
+            socket.setdefaulttimeout(config.timeout)
+
+    def updateBaseIndex(self, eggs_dir=None):
         """Update base index.html
         """
+        if eggs_dir is None:
+            eggs_dir = self.config.eggs_directory
         file_path = os.path.join(eggs_dir, 'index.html')
         html = open(file_path, 'w')
 
@@ -174,9 +179,11 @@ class IndexProxy(object):
         requirement = Requirement.parse(package_name)
         self.index.find_packages(requirement)
 
-    def updatePackageIndex(self, package_name, eggs_dir=EGGS_DIR):
+    def updatePackageIndex(self, package_name, eggs_dir=None):
         """Update info for a specific package
         """
+        if eggs_dir is None:
+            eggs_dir = self.config.eggs_directory
 
         package_path = os.path.join(eggs_dir, package_name)
         local_eggs = {}
@@ -224,9 +231,11 @@ class IndexProxy(object):
         html.close()
         del html
 
-    def updateEggFor(self, package_name, eggname, eggs_dir=EGGS_DIR):
+    def updateEggFor(self, package_name, eggname, eggs_dir=None):
         """Download an egg for package_name
         """
+        if eggs_dir is None:
+            eggs_dir = self.config.eggs_directory
         self._lookupPackage(package_name)
         file_path = os.path.join(eggs_dir, package_name, eggname)
         for dist in self.index[package_name]:
