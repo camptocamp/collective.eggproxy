@@ -203,6 +203,7 @@ class IndexProxy(object):
             # Pypi is probably down, so we keep our existing one.
             return
         html = open(html_path, 'w')
+        logger.debug('Building new index page for package %r' % package_name)
         title = "Links for %s" % package_name
         print >> html, "<html><head><title>%s</title></head>" % title
         print >> html, "<body><h1>%s</h1>" % title
