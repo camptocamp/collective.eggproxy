@@ -24,7 +24,8 @@ class TestWsgi(unittest.TestCase):
 
     def test_package_index(self):
         response = self.app.get('/collective.eggproxy')
-        assert '<title>collective.eggproxy</title>' in response, response
+        assert '<title>Links for collective.eggproxy</title>' in response, \
+                response
 
     def test_package(self):
         # without trailing '/', paste.fixture.TestResponse click results in:

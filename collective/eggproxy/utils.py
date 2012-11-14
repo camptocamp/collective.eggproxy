@@ -207,8 +207,8 @@ class IndexProxy(object):
             return
         html = open(html_path, 'w')
         title = "Links for %s" % package_name
-        print >> html, "<html><head><title>%s</title></head>" % package_name
-        print >> html, "<body><h1>%s</h1>" % package_name
+        print >> html, "<html><head><title>%s</title></head>" % title
+        print >> html, "<body><h1>%s</h1>" % title
         for dist in dists:
             if getattr(dist, "module_path", None) is not None:
                 # this is a module installed in system
