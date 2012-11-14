@@ -185,22 +185,19 @@ class IndexProxy(object):
         if eggs_dir is None:
             eggs_dir = self.config.eggs_directory
 
-        package_path = os.path.join(eggs_dir, package_name)
-        local_eggs = {}
-        if os.path.exists(package_path):
-            for pkg in os.listdir(package_path):
-                if pkg != "index.html":
-                    local_eggs[pkg] = True
-
         self._lookupPackage(package_name)
-        if not self.index[package_name] and len(local_eggs) == 0:
-            raise PackageNotFound, "Package '%s' does not exists or has no " \
-                    "eggs" % package_name
+        dists = self.index[package_name]
+        package_path = os.path.join(eggs_dir, package_name)
+        local_eggs = set(os.listdir(package_path)) - set(["index.html"]) \
+                if os.path.exists(package_path) else set()
+
+        if not dists and len(local_eggs) == 0:
+            raise PackageNotFound("Package '%s' does not exists or has no "
+                    "eggs" % package_name)
 
         if not os.path.exists(package_path):
             os.mkdir(package_path)
         html_path = os.path.join(package_path, 'index.html')
-        dists = self.index[package_name]
         if not dists and os.path.exists(html_path):
             # We already have a cached index page and there are no dists.
             # Pypi is probably down, so we keep our existing one.
@@ -219,8 +216,7 @@ class IndexProxy(object):
                 '<a href="%s#%s" rel="download">%s</a><br />'
                 % (filename, md5, filename)
                 )
-            if filename in local_eggs:
-                del local_eggs[filename]
+            local_eggs.discard(filename)
         for egg in local_eggs:
             print >> html, (
                 '<a href="%s" rel="download">%s</a><br />'
