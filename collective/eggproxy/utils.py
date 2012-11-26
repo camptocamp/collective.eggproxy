@@ -19,7 +19,8 @@ import tempfile
 import urllib2
 import urlparse
 import shutil
-import sys
+import logging
+
 from setuptools.package_index import PackageIndex as BasePackageIndex
 from setuptools.package_index import (
     egg_info_for_url,
@@ -31,9 +32,11 @@ from setuptools.package_index import (
     find_external_links,
     PYPI_MD5,
     )
-
 from pkg_resources import Requirement
+
 from collective.eggproxy.config import config
+
+logger = logging.getLogger(__name__)
 
 ALWAYS_REFRESH = config.getboolean('eggproxy', 'always_refresh')
 EGGS_DIR = config.get("eggproxy", "eggs_directory")
@@ -239,10 +242,10 @@ class IndexProxy(object):
                 tmp = tempfile.gettempdir()
                 try:
                     tmp_location = self.index.download(dist.location, tmp)
-                    sys.stderr.write('Downloaded %s\n' % dist.location)
+                    logger.debug('Downloaded %s\n' % dist.location)
                     shutil.move(tmp_location, file_path)
                     return
                 except Exception, err:
-                    sys.stderr.write('Error downloading %s: \n\t%s\n' % (dist.location, err))
+                    logger.debug('Error downloading %s: \n\t%s\n' % (dist.location, err))
 
         raise ValueError, "Egg '%s' not found in index" % eggname

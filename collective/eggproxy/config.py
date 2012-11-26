@@ -16,9 +16,11 @@
 ## Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 import os
 import sys
+import logging.config
 from ConfigParser import ConfigParser
 from ConfigParser import NoSectionError
 
+logger = logging.getLogger(__name__)
 
 # First try: User-specific config file
 CONFIG_FILE = os.path.join(os.path.expanduser('~'), 'eggproxy.conf')
@@ -30,11 +32,10 @@ if not os.path.exists(CONFIG_FILE):
 if not os.path.exists(CONFIG_FILE):
     CONFIG_FILE = '/etc/eggproxy.conf'
 
-#print "Using config file", CONFIG_FILE
 config = ConfigParser()
 config.add_section("eggproxy")
 config.set("eggproxy", "eggs_directory", "/var/www")
-config.set("eggproxy", "index", 'http://pypi.python.org/simple')
+config.set("eggproxy", "index", "http://pypi.python.org/simple")
 config.set("eggproxy", "update_interval", '24')
 config.set("eggproxy", "host", '127.0.0.1')
 config.set("eggproxy", "port", '8888')
@@ -42,6 +43,13 @@ config.set("eggproxy", "always_refresh", '0')
 config.set("eggproxy", "timeout", '3')
 
 if os.path.exists(CONFIG_FILE):
+    try:
+        logging.config.fileConfig(CONFIG_FILE)
+    except Exception:
+        logging.basicConfig(
+                format='%(asctime)s %(levelname)-5.5s [%(name)s] %(message)s',
+                level=logging.INFO)
+    logger.info("Using config file: %s" % CONFIG_FILE)
     config.readfp(open(CONFIG_FILE))
     # Check for old [default] section that fails with python2.6 had thus has
     # been changed to [eggproxy] in 0.4
@@ -51,7 +59,9 @@ if os.path.exists(CONFIG_FILE):
     except NoSectionError:
         old_section_name = False
     if old_section_name:
-        print "WARNING: rename the [default] section in the config file"
-        print CONFIG_FILE
-        print "to [eggproxy].  This is needed for python2.6 compatibility."
+        logger.error("rename the [default] section in the config file \"%s\""
+                " to [eggproxy].  This is needed for python2.6 compatibility."
+                % CONFIG_FILE)
         sys.exit(1)
+
+logger.info('Using index %s\n' % config.get("eggproxy", "index"))
