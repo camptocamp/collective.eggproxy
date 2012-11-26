@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from collective.eggproxy.wsgi import EggProxyApp
-from collective.eggproxy.tests import *
+from collective.eggproxy.config import config
+from collective.eggproxy.tests import setup_func, teardown_func, tempdir, with_setup
 from paste.fixture import TestApp
 
-app = TestApp(EggProxyApp('http://pypi.python.org/simple', eggs_dir=tempdir))
+config["eggs_directory"] = tempdir
+app = TestApp(EggProxyApp(config))
 
 @with_setup(setup_func, teardown_func)
 def test_root_index():

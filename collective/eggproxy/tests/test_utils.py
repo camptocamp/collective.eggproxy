@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from collective.eggproxy.utils import IndexProxy
+from collective.eggproxy.config import config
 from collective.eggproxy.tests import *
 
-index = IndexProxy()
+config["eggs_directory"] = tempdir
+index = IndexProxy(config)
 
 @with_setup(setup_func, teardown_func)
 def test_index():

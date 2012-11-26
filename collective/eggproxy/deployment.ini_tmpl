@@ -1,8 +1,52 @@
 [server:main]
 use = egg:Paste#http
+host = 127.0.0.1
 port = 8888
 
 [app:main]
 use = egg:collective.eggproxy
+
+# the index cache will be stored to the eggs_directory directory
 eggs_directory = %(here)s/eggs_directory
+
+# the packacge index url that will be cached
 index = http://pypi.python.org/simple
+
+# always_refresh is off by default. Setting it to 1 forces eggproxy to
+# always attempt a pypi connection. Slower but fresher.
+#always_refresh = 1
+
+# timeout is only needed for always_refresh: it sets a socket timeout.
+#timeout = 3
+
+
+# Begin logging configuration
+
+[loggers]
+keys = root, eggproxy
+
+[handlers]
+keys = console
+
+[formatters]
+keys = generic
+
+[logger_root]
+level = INFO
+handlers = console
+
+[logger_eggproxy]
+level = DEBUG
+handlers =
+qualname = collective.eggproxy
+
+[handler_console]
+class = StreamHandler
+args = (sys.stderr,)
+level = NOTSET
+formatter = generic
+
+[formatter_generic]
+format = %(asctime)s %(levelname)-5.5s [%(name)s] %(message)s
+
+# End logging configuration

@@ -17,7 +17,6 @@
 ## along with this program; see the file COPYING. If not, write to the
 ## Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 import os
-import socket
 import sys
 import logging
 
@@ -26,35 +25,20 @@ from paste.script.appinstall import Installer as BaseInstaller
 from paste.fileapp import FileApp
 from paste.httpexceptions import HTTPNotFound
 
-from collective.eggproxy.utils import PackageIndex
-from collective.eggproxy import IndexProxy
-from collective.eggproxy import PackageNotFound
-from collective.eggproxy.config import config
+from collective.eggproxy.utils import IndexProxy, PackageNotFound
 
 logger = logging.getLogger(__name__)
-
-ALWAYS_REFRESH = config.getboolean('eggproxy', 'always_refresh')
-if ALWAYS_REFRESH:
-    logger.debug("Always-refresh mode switched on")
-    # Apply timeout setting right here. Might not be the best spot. Timeout is
-    # needed for the always_refresh option to keep a down pypi from blocking
-    # the proxy.
-    timeout = config.get('eggproxy', 'timeout')
-    socket.setdefaulttimeout(int(timeout))
 
 
 class EggProxyApp(object):
 
-    def __init__(self, index_url=None, eggs_dir=None):
-        if not index_url:
-            index_url = config.get('eggproxy', 'index')
-        if not eggs_dir:
-            eggs_dir = config.get('eggproxy', 'eggs_directory')
-        if not os.path.isdir(eggs_dir):
-            logger.error('You must create the %r directory' % eggs_dir)
+    def __init__(self, config):
+        self.config = config
+        self.eggs_dir = config.eggs_directory
+        if not os.path.isdir(self.eggs_dir):
+            logger.error('You must create the %r directory' % self.eggs_dir)
             sys.exit()
-        self.eggs_index_proxy = IndexProxy(PackageIndex(index_url=index_url))
-        self.eggs_dir = eggs_dir
+        self.eggs_index_proxy = IndexProxy(config)
 
     def __call__(self, environ, start_response):
         path = [part for part in environ.get('PATH_INFO', '').split('/')
@@ -83,7 +67,7 @@ class EggProxyApp(object):
 
     def checkBaseIndex(self):
         filename = os.path.join(self.eggs_dir, 'index.html')
-        if not os.path.exists(filename) or ALWAYS_REFRESH:
+        if not os.path.exists(filename) or self.config.always_refresh:
             self.eggs_index_proxy.updateBaseIndex(self.eggs_dir)
         return filename
 
@@ -96,7 +80,7 @@ class EggProxyApp(object):
                     eggs_dir=self.eggs_dir)
             except PackageNotFound:
                 return None
-        elif ALWAYS_REFRESH:
+        elif self.config.always_refresh:
             # Force refresh
             try:
                 self.eggs_index_proxy.updatePackageIndex(
@@ -130,9 +114,9 @@ class EggProxyApp(object):
 def app_factory(global_config, **local_conf):
     # Grab config from wsgi .ini file. If not specified, config.py's values
     # take over.
-    eggs_dir = local_conf.get('eggs_directory', None)
-    index_url = local_conf.get('index', None)
-    return EggProxyApp(index_url, eggs_dir)
+    from collective.eggproxy.config import config
+    config.initialize(local_conf)
+    return EggProxyApp(config)
 
 
 class Installer(BaseInstaller):
@@ -150,19 +134,10 @@ class Installer(BaseInstaller):
 
 
 def standalone():
-    port = config.get('eggproxy', 'port')
-    host = config.get('eggproxy', 'host')
-    # 0.2.0 way of starting the httpserver, but using the config'ed port
-    # number instead of a hardcoded 8888.
-    httpserver.serve(EggProxyApp(), host=host, port=port)
-    # Post-0.2.0 way of starting the server using hardcoded config by means of
-    # the package-internal .ini file. This does not allow starting it on a
-    # different port, so I [reinout] commented it out for now.
-    #import paste.script.command
-    #this_dir = os.path.dirname(__file__)
-    #sys.argv.extend(['serve', os.path.join(this_dir, 'wsgi.ini')])
-    #paste.script.command.run()
+    from collective.eggproxy.config import config
+    config.initialize()
+    httpserver.serve(EggProxyApp(config), host=config.host, port=config.port)
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     standalone()

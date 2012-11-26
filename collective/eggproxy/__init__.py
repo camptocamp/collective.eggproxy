@@ -14,6 +14,3 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program; see the file COPYING. If not, write to the
 ## Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-from collective.eggproxy.utils import PackageNotFound
-from collective.eggproxy.utils import IndexProxy
-eggs_index_proxy = IndexProxy()
