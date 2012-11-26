@@ -83,7 +83,7 @@ class Configurator(dict):
                     logger.error("rename the [default] section in the config"
                             " file \"%s\" to [eggproxy].  This is needed for"
                             " python2.6 compatibility." % cfg_file)
-                    sys.exit(1)
+                    raise Exception('invalid configuration')
 
             config = dict(cfg.items("eggproxy"))
 

@@ -17,7 +17,6 @@
 ## along with this program; see the file COPYING. If not, write to the
 ## Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 import os
-import sys
 import logging
 
 from paste import httpserver
@@ -37,7 +36,8 @@ class EggProxyApp(object):
         self.eggs_dir = config.eggs_directory
         if not os.path.isdir(self.eggs_dir):
             logger.error('You must create the %r directory' % self.eggs_dir)
-            sys.exit()
+            raise Exception('eggs cache directory %r does not exist'
+                    % self.eggs_dir)
         self.eggs_index_proxy = IndexProxy(config)
 
     def __call__(self, environ, start_response):
