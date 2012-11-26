@@ -73,6 +73,7 @@ class EggProxyApp(object):
 
     def checkPackageIndex(self, package_name):
         filename = os.path.join(self.eggs_dir, package_name, 'index.html')
+        logger.debug('Asking for %r package index page' % package_name)
         if not os.path.exists(filename):
             try:
                 self.eggs_index_proxy.updatePackageIndex(
@@ -89,8 +90,8 @@ class EggProxyApp(object):
             except PackageNotFound:
                 pass
         else:
-            # Just use the proxied copy.
-            pass
+            logger.debug('Return cached version of %r package index page'
+                    % package_name)
         return filename
 
     def checkEggFor(self, package_name, eggname):

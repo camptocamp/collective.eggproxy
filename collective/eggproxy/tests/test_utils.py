@@ -53,7 +53,8 @@ class TestUtils(unittest.TestCase):
         ['index.html']
 
         page = open(os.path.join(dirname, 'index.html')).read()
-        assert '<html><head><title>collective.eggproxy</title></head>' in page
+        assert '<html><head><title>Links for collective.eggproxy' \
+                '</title></head>' in page
 
     def test_local_packages(self):
         dirname = os.path.join(self.tempdir, 'collective.eggproxy')
@@ -79,4 +80,4 @@ class TestUtils(unittest.TestCase):
         ['index.html']
 
         page = open(os.path.join(dirname, 'index.html')).read()
-        assert '<html><head><title>Paste</title></head>' in page
+        assert '<html><head><title>Links for Paste</title></head>' in page
